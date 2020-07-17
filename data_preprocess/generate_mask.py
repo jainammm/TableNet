@@ -7,7 +7,8 @@ from PIL import Image
 def sameTable(ymin_1, ymin_2, ymax_1, ymax_2):
     min_diff = abs(ymin_1 - ymin_2)
     max_diff = abs(ymax_1 - ymax_2)
-    if min_diff <= 5 and max_diff <=5:
+
+    if min_diff <= 5 or max_diff <=5:
         return True
     elif min_diff <= 4 and max_diff <=7:
         return True
@@ -42,11 +43,11 @@ if __name__ == "__main__":
 
             got_first_column = False
             i=0
-            first_xmin =0
-            prev_xmax = 0
+            table_xmin = 10000
+            table_xmax = 0
 
-            prev_ymin = 0
-            prev_ymax = 0
+            table_ymin = 10000
+            table_ymax = 0
 
             for column in root.findall('object'):
                 bndbox = column.find('bndbox')
@@ -54,22 +55,35 @@ if __name__ == "__main__":
                 ymin = int(bndbox.find('ymin').text)
                 xmax = int(bndbox.find('xmax').text)
                 ymax = int(bndbox.find('ymax').text)
+
+                col_mask[ymin:ymax, xmin:xmax] = 255
+                                
                 if got_first_column:
                     if sameTable(prev_ymin, ymin, prev_ymax, ymax) == False:
                         i+=1
                         got_first_column = False
-                        table_mask[prev_ymin:prev_ymax, first_xmin:prev_xmax] = 255
+                        table_mask[table_ymin:table_ymax, table_xmin:table_xmax] = 255
+                        
+                        table_xmin = 10000
+                        table_xmax = 0
+
+                        table_ymin = 10000
+                        table_ymax = 0
                         
                 if got_first_column == False:
                     got_first_column = True
                     first_xmin = xmin
-
-                prev_xmax = xmax
+                    
                 prev_ymin = ymin
                 prev_ymax = ymax
-                col_mask[ymin:ymax, xmin:xmax] = 255
+                
+                table_xmin = min(xmin, table_xmin)
+                table_xmax = max(xmax, table_xmax)
+                
+                table_ymin = min(ymin, table_ymin)
+                table_ymax = max(ymax, table_ymax)
 
-            table_mask[prev_ymin:prev_ymax, first_xmin:prev_xmax] = 255
+            table_mask[table_ymin:table_ymax, table_xmin:table_xmax] = 255
 
             im = Image.fromarray(col_mask.astype(np.uint8),'L')
             im.save(final_col_directory + filename + ".jpeg")
