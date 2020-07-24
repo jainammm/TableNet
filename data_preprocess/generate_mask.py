@@ -8,7 +8,7 @@ def sameTable(ymin_1, ymin_2, ymax_1, ymax_2):
     min_diff = abs(ymin_1 - ymin_2)
     max_diff = abs(ymax_1 - ymax_2)
 
-    if min_diff <= 5 or max_diff <=5:
+    if min_diff <= 5 and max_diff <=5:
         return True
     elif min_diff <= 4 and max_diff <=7:
         return True
@@ -19,17 +19,19 @@ def sameTable(ymin_1, ymin_2, ymax_1, ymax_2):
 
 if __name__ == "__main__":
     directory = './dataset/Marmot_data/'
+    directory_list = ['10.1.1.1.2051_6.xml', '10.1.1.1.2103_4.xml', '10.1.1.6.2272_17.xml',
+        '10.1.1.6.2381_5.xml', '10.1.1.8.2180_3.xml', '10.1.1.48.1004_6.xml']
     final_col_directory = './dataset/column_mask/'
     final_table_directory = './dataset/table_mask/'
 
-    for file in os.listdir(directory):
+    for file in directory_list:#os.listdir(directory):
         filename = os.fsdecode(file)
         # Find all the xml files
         if filename.endswith(".xml"):
             filename = filename[:-4]
 
             # Parse xml file
-            tree = ET.parse('./dataset/Marmot_data/' + filename + '.xml')
+            tree = ET.parse('./dataset/Marmot/' + filename + '.xml')
             root = tree.getroot()
             size = root.find('size')
 
