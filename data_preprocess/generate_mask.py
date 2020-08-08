@@ -1,3 +1,7 @@
+'''
+Generate Comumn and Table mask from Marmot Data
+'''
+
 import xml.etree.ElementTree as ET
 import os
 import numpy as np
@@ -19,12 +23,10 @@ def sameTable(ymin_1, ymin_2, ymax_1, ymax_2):
 
 if __name__ == "__main__":
     directory = './dataset/Marmot_data/'
-    directory_list = ['10.1.1.1.2051_6.xml', '10.1.1.1.2103_4.xml', '10.1.1.6.2272_17.xml',
-        '10.1.1.6.2381_5.xml', '10.1.1.8.2180_3.xml', '10.1.1.48.1004_6.xml']
     final_col_directory = './dataset/column_mask/'
     final_table_directory = './dataset/table_mask/'
 
-    for file in directory_list:#os.listdir(directory):
+    for file in os.listdir(directory):
         filename = os.fsdecode(file)
         # Find all the xml files
         if filename.endswith(".xml"):
