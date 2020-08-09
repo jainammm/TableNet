@@ -27,7 +27,7 @@ pip install -r requirements.txt
 1. Run `data_preprocess/generate_mask.py` to generate Table and Column Mask of corresponding images.
 1. Follow the `TableNet.ipynb` notebook to train and test the model.
 
-## Challanges
+## Challenges
 * Require a very decent System with a good GPU for accurate result on High pixel images. 
 
 ## Dataset
