@@ -1,3 +1,5 @@
 tensorflow==2.2.0
 Pillow==5.4.0
 matplotlib==3.3.2
+numpy
+click
