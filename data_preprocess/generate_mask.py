@@ -91,7 +91,9 @@ def generate_masks(xml_file, table_mask_file, column_mask_file):
 @click.command()
 @click.argument('source_dir', type=click.Path())
 @click.argument('dest_dir', default='.')
-def main(source_dir, dest_dir):
+@click.option('--quiet', '-q', is_flag=True,
+              help='do not perform dataset consistency check')
+def main(source_dir, dest_dir, quiet):
     '''Generate Table and Column masks from Marmot Dataset.
 
     Command line arguments:\n
@@ -103,6 +105,9 @@ def main(source_dir, dest_dir):
                   dest_dir separately for column and table mask files:
                     * dest_dir/column_mask
                     * dest_dir/table_mask
+
+    Additionally check dataset for consistency:
+    every *.xml is expected to have a corresponding *.bmp file.
     '''
 
     assert os.path.isdir(source_dir), \
@@ -120,11 +125,39 @@ def main(source_dir, dest_dir):
             basename = fname[:-4]
             outfile = basename + '.jpeg'
 
+            if not quiet:
+                check_file_pairs(source_dir, basename)
+
             xmlfile = os.path.join(source_dir, fname)
             table_mask_file = os.path.join(final_table_directory, outfile)
             column_mask_file = os.path.join(final_col_directory, outfile)
 
             generate_masks(xmlfile, table_mask_file, column_mask_file)
+
+
+def check_file_pairs(dname, basename) -> bool:
+    '''In Marmot dataset, each .bmp file has a corresponding .xml file.
+    Check if this is the case for given file <basename>.
+
+    Return
+    ------
+    True if both <basename>.bmp and <basename>.xml exist
+    False otherwise
+
+    >>> check_file_pairs('./dataset/Marmot_data', '10.1.1.8.2121_4')
+    >>> True
+    '''
+    labels = {True: 'Found', False: 'Missing'}
+    bmp_file = os.path.join(dname, basename + '.bmp')
+    xml_file = os.path.join(dname, basename + '.xml')
+    bmp_ok = os.path.isfile(bmp_file)
+    xml_ok = os.path.isfile(xml_file)
+    ok = bmp_ok and xml_ok
+    if not ok:
+        msg = 'File pair is incomplete:\n{}\t{}\n{}\t{}\n'.format(
+               labels[bmp_ok], bmp_file, labels[xml_ok], xml_file)
+        print(msg)
+    return ok
 
 
 if __name__ == "__main__":
